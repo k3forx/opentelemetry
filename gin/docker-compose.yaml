@@ -15,10 +15,30 @@ services:
     volumes:
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - example
 
   app:
+    container_name: app
     build: 
       context: .
       dockerfile: ./docker/app/Dockerfile
     ports:
       - "8080:8080"
+    networks:
+      - example
+
+  jaeger:
+    container_name: jaeger
+    hostname: jaeger
+    image: jaegertracing/all-in-one:latest
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "4318:4318"
+      - "16686:16686"
+    networks:
+      - example
+
+networks:
+  example:
