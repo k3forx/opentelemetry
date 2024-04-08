@@ -6,21 +6,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/k3forx/opentelemetry/gin/api/handler"
+	"github.com/k3forx/opentelemetry/gin/opentelemetry/trace"
 
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
-
-// var tracer = otel.Tracer("gin-server")
 
 func main() {
 	ctx := context.Background()
 
-	tp, err := initTracer(ctx)
+	tp, err := trace.InitTraceProvider(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,47 +33,29 @@ func main() {
 
 	r.GET("/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		name := getUser(id)
+		name := getUser(c, id)
 		c.JSON(http.StatusOK, map[string]any{
 			"id":   id,
 			"name": name,
 		})
 	})
-	_ = r.Run(":8080")
+
+	v1 := r.Group("/v1")
+	handler.RegisterBookHandler(v1)
+
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
 
-func initTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {
-	exporter, err := stdout.New(stdout.WithPrettyPrint())
-	if err != nil {
-		return nil, err
-	}
-
-	opts := []otlptracehttp.Option{
-		otlptracehttp.WithInsecure(),
-		otlptracehttp.WithEndpointURL("http://jaeger:4318/v1/traces"),
-	}
-	exp, err := otlptracehttp.New(ctx, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(exp),
-		sdktrace.WithBatcher(exporter),
-	)
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	return tp, nil
-}
-
-func getUser(id string) string {
+func getUser(ctx *gin.Context, id string) string {
 	// Pass the built-in `context.Context` object from http.Request to OpenTelemetry APIs
 	// where required. It is available from gin.Context.Request.Context()
-	// _, span := tracer.Start(c.Request.Context(), "getUser", oteltrace.WithAttributes(attribute.String("id", id)))
-	// defer span.End()
+	_, span := trace.Tracer.Start(ctx.Request.Context(), "getUser", oteltrace.WithAttributes(attribute.String("id", id)))
+	defer span.End()
+
 	if id == "123" {
-		return "otelgin tester"
+		return "tester"
 	}
 	return "unknown"
 }

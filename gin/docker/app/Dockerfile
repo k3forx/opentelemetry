@@ -4,7 +4,7 @@ RUN mkdir /app
 WORKDIR /app
 COPY ./ .
 
-RUN go install github.com/githubnemo/CompileDaemon@latest
+RUN go install github.com/cosmtrek/air@latest
 RUN go mod download
 
-ENTRYPOINT CompileDaemon --build="go build -o main ./" --command=./main
+CMD ["air", "-c", ".air.toml"]

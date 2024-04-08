@@ -4,37 +4,36 @@ import (
 	"context"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-func NewHTTPTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
-	// opts := []otlptracehttp.Option{
-	// 	otlptracehttp.WithInsecure(),
-	// 	otlptracehttp.WithEndpointURL("http://0.0.0.0:4318/v1/traces"),
-	// }
-	// exp, err := otlptracehttp.New(ctx, opts...)
+var Tracer = otel.Tracer("gin-server")
+
+func InitTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
+	// exporter, err := stdout.New(stdout.WithPrettyPrint())
 	// if err != nil {
 	// 	return nil, err
 	// }
 
-	debugExp, err := stdouttrace.New(
-		stdouttrace.WithPrettyPrint(),
-		// stdouttrace.WithWriter(os.Stderr),
-	)
+	traceHTTPOpts := []otlptracehttp.Option{
+		otlptracehttp.WithInsecure(),
+		otlptracehttp.WithEndpointURL("http://jaeger:4318/v1/traces"),
+	}
+	exp, err := otlptracehttp.New(ctx, traceHTTPOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	traceProvider := sdktrace.NewTracerProvider(
-		// sdktrace.WithBatcher(exp),
-		sdktrace.WithBatcher(debugExp),
+	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithBatcher(exp),
+		// sdktrace.WithBatcher(exporter),
 	)
-
-	otel.SetTracerProvider(traceProvider)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-
-	return traceProvider, nil
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{}, propagation.Baggage{},
+	))
+	return tp, nil
 }
