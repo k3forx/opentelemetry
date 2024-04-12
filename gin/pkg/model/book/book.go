@@ -1,6 +1,7 @@
 package book_model
 
 type Book struct {
-	ID   int
-	Name string
+	ID       int64
+	Title    string
+	AuthorID int64
 }

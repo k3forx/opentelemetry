@@ -11,6 +11,12 @@ import (
 
 var Tracer = otel.Tracer("gin-server")
 
+const (
+	SpanNameHandler    = "handler"
+	SpanNameUsecase    = "usecase"
+	SpanNameRepository = "repository"
+)
+
 func InitTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	// exporter, err := stdout.New(stdout.WithPrettyPrint())
 	// if err != nil {

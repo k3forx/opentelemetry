@@ -1,4 +1,4 @@
-package usecase_iface
+package usecase
 
 import (
 	"context"
@@ -31,7 +31,7 @@ func (e *executer[T, V]) Do(ctx context.Context, in T) V {
 }
 
 func (e *executer[T, V]) DoWithTrace(ctx context.Context, in T, opts ...oteltrace.SpanStartOption) V {
-	ctx, span := trace.Tracer.Start(ctx, "Usecase.Do", opts...)
+	ctx, span := trace.Tracer.Start(ctx, trace.SpanNameUsecase, opts...)
 	defer span.End()
 	return e.Do(ctx, in)
 }

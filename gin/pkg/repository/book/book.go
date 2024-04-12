@@ -6,6 +6,7 @@ import (
 	book_model "github.com/k3forx/opentelemetry/gin/pkg/model/book"
 )
 
-type Book interface {
-	GetByID(ctx context.Context, id int) (book_model.Book, error)
+type BookRepository interface {
+	GetAllByAuthorID(ctx context.Context, id int64) ([]book_model.Book, error)
+	GetByID(ctx context.Context, id int64) (book_model.Book, error)
 }
