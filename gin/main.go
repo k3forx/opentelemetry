@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/k3forx/opentelemetry/gin/api/handler"
 	"github.com/k3forx/opentelemetry/gin/opentelemetry/trace"
 	"github.com/k3forx/opentelemetry/gin/pkg/repository"
@@ -28,10 +28,20 @@ func main() {
 		}
 	}()
 
-	db, err := sql.Open("mysql", "root:password@/db?parseTime=true")
+	cfg := mysql.Config{
+		User:                 "root",
+		Passwd:               "root_password",
+		DBName:               "app",
+		Addr:                 "mysql:3306",
+		Net:                  "tcp",
+		ParseTime:            true,
+		AllowNativePasswords: true,
+	}
+	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
+
 	repositorySet := repository.SetUp(db)
 
 	r := gin.New()

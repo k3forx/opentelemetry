@@ -1,11 +1,11 @@
-package get_by_id
+package create
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	usecase_iface "github.com/k3forx/opentelemetry/gin/api/usecase"
-	author_model "github.com/k3forx/opentelemetry/gin/pkg/model/author"
 	book_model "github.com/k3forx/opentelemetry/gin/pkg/model/book"
 	"github.com/k3forx/opentelemetry/gin/pkg/repository"
 	author_repository "github.com/k3forx/opentelemetry/gin/pkg/repository/author"
@@ -13,13 +13,13 @@ import (
 )
 
 type Input struct {
-	ID int64
+	AuthorID int64
+	Title    string
 }
 
 type Output struct {
-	Error  error
-	Book   book_model.Book
-	Author author_model.Author
+	Error error
+	Book  book_model.Book
 }
 
 type usecase struct {
@@ -35,30 +35,22 @@ func NewUsecase(repositorySet repository.RepositorySet) usecase_iface.Usecase[In
 }
 
 func (u usecase) Do(ctx context.Context, in Input) Output {
-	// book, err := u.bookRepository.GetByID(ctx, in.ID)
-	// if err != nil {
-	// 	return Output{Error: err}
-	// }
-
-	// author, err := u.authorRepository.GetByID(ctx, book.AuthorID)
-	// if err != nil {
-	// 	return Output{Error: err}
-	// }
-
-	bookWithAuthor, err := u.bookRepository.GetWithAuthorByID(ctx, in.ID)
+	author, err := u.authorRepository.GetByID(ctx, in.AuthorID)
 	if err != nil {
-		log.Println(err)
+		log.Panicln(err)
+		return Output{Error: err}
+	}
+	if author.ID <= 0 {
+		return Output{Error: errors.New("author is not found")}
+	}
+
+	book := book_model.Book{
+		Title:    in.Title,
+		AuthorID: author.ID,
+	}
+	if err := u.bookRepository.Create(ctx, &book); err != nil {
 		return Output{Error: err}
 	}
 
-	return Output{
-		Book: book_model.Book{
-			ID:    bookWithAuthor.ID,
-			Title: bookWithAuthor.Title,
-		},
-		Author: author_model.Author{
-			ID:   bookWithAuthor.AuthorID,
-			Name: bookWithAuthor.AuthorName,
-		},
-	}
+	return Output{Book: book}
 }

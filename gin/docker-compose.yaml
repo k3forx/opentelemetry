@@ -4,10 +4,8 @@ services:
     container_name: mysql
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: library
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: mysql
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - 3306:3306
     volumes:

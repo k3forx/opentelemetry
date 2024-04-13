@@ -7,7 +7,22 @@ package book_repository_impl
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
+
+const create = `-- name: Create :execresult
+INSERT INTO books (author_id, title) VALUES (?, ?)
+`
+
+type CreateParams struct {
+	AuthorID int64
+	Title    string
+}
+
+func (q *Queries) Create(ctx context.Context, arg CreateParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, create, arg.AuthorID, arg.Title)
+}
 
 const getAllByAuthorID = `-- name: GetAllByAuthorID :many
 SELECT b.id, b.author_id, b.title, b.created_at, b.updated_at FROM books AS b LEFT JOIN authors AS a ON b.author_id = a.id WHERE a.id = ?
@@ -55,6 +70,35 @@ func (q *Queries) GetByID(ctx context.Context, id int64) (Book, error) {
 		&i.Title,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getWithAuthorByID = `-- name: GetWithAuthorByID :one
+SELECT b.id, b.author_id, b.title, b.created_at, b.updated_at, a.id AS author_id, a.name AS author_name FROM books AS b LEFT JOIN authors AS a ON b.author_id = a.id WHERE b.id = ? LIMIT 1
+`
+
+type GetWithAuthorByIDRow struct {
+	ID         int64
+	AuthorID   int64
+	Title      string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	AuthorID_2 sql.NullInt64
+	AuthorName sql.NullString
+}
+
+func (q *Queries) GetWithAuthorByID(ctx context.Context, id int64) (GetWithAuthorByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getWithAuthorByID, id)
+	var i GetWithAuthorByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.AuthorID,
+		&i.Title,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AuthorID_2,
+		&i.AuthorName,
 	)
 	return i, err
 }
