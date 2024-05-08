@@ -16,7 +16,7 @@ services:
 
   app:
     container_name: app
-    build: 
+    build:
       context: .
       dockerfile: ./docker/app/Dockerfile
     volumes:
@@ -33,8 +33,9 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: true
     ports:
-      - "4318:4318"
-      - "16686:16686"
+      - 4317:4317
+      - 4318:4318
+      - 16686:16686
     networks:
       - example
 
