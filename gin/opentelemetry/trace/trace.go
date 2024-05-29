@@ -36,7 +36,7 @@ func InitTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
 
 	resource := resource.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceNameKey.String("app"),
+		semconv.ServiceNameKey.String("book-server"),
 		semconv.ServiceVersionKey.String("0.0.1"),
 	)
 

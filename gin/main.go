@@ -45,10 +45,10 @@ func main() {
 	repositorySet := repository.SetUp(db)
 
 	r := gin.New()
-	r.Use(otelgin.Middleware("my-server"))
+	r.Use(otelgin.Middleware("book-server"))
 
-	v1 := r.Group("/v1")
-	handler.RegisterBookHandler(v1, repositorySet)
+	// v1 := r.Group("/v1")
+	handler.RegisterBookHandler(r.Group(""), repositorySet)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
