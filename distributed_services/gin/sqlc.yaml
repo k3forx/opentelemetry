@@ -1,0 +1,18 @@
+version: "2"
+
+sql:
+  - engine: "mysql"
+    queries: "./db/authors.sql"
+    schema: "./db/schema.sql"
+    gen:
+      go:
+        package: "author_repository_impl"
+        out: "pkg/repositoryimpl/author"
+
+  - engine: "mysql"
+    queries: "./db/books.sql"
+    schema: "./db/schema.sql"
+    gen:
+      go:
+        package: "book_repository_impl"
+        out: "pkg/repositoryimpl/book"

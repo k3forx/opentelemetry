@@ -1,0 +1,57 @@
+services:
+  mysql:
+    image: mysql:8.3
+    container_name: mysql
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - example
+
+  book-server:
+    container_name: book-server
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    environment:
+      SERVER_PORT: 8080
+      OTEL_SERVICE_NAME: book-server
+    ports:
+      - 8080:8080
+    networks:
+      - example
+
+  author-server:
+    container_name: author-server
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    environment:
+      SERVER_PORT: 8081
+      OTEL_SERVICE_NAME: author-server
+    ports:
+      - 8081:8081
+    networks:
+      - example
+
+  jaeger:
+    container_name: jaeger
+    hostname: jaeger
+    image: jaegertracing/all-in-one:latest
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 16686:16686
+    networks:
+      - example
+
+networks:
+  example:
