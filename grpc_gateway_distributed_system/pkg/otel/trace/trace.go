@@ -55,7 +55,7 @@ type sampler struct {
 
 func newSampler() sdktrace.Sampler {
 	return &sampler{
-		defaultSampler: sdktrace.ParentBased(sdktrace.TraceIDRatioBased(0.01)),
+		defaultSampler: sdktrace.ParentBased(sdktrace.TraceIDRatioBased(1)),
 	}
 }
 

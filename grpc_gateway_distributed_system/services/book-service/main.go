@@ -9,9 +9,9 @@ import (
 	"os"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	author_client "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/client/author"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/grpc/server"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository"
 	author_repository_impl "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repositoryimpl/author"
 	book_repository_impl "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repositoryimpl/book"
@@ -89,8 +89,7 @@ func startBookGRPCServer(repositorySet repository.RepositorySet) error {
 	}
 
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
-		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	)
 
 	bookServer := server.NewBookServer(repositorySet)

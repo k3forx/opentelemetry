@@ -12,6 +12,7 @@ import (
 	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
 	bookv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/book/v1"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -77,5 +78,12 @@ func startGatewayServer(ctx context.Context) error {
 	}
 
 	log.Printf("Gateway server listening on :%s", port)
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
+	handler := otelhttp.NewHandler(mux, "grpc-gateway",
+		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			return fmt.Sprintf("HTTP %s %s", r.Method, r.URL.Path)
+		}),
+		otelhttp.WithPublicEndpoint(), // セキュリティとベストプラクティスのため
+	)
+
+	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
 }

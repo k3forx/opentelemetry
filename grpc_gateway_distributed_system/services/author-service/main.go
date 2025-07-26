@@ -9,14 +9,14 @@ import (
 	"os"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/grpc/server"
-	"github.com/uptrace/opentelemetry-go-extra/otelsql"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
-	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository"
 	author_repository_impl "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repositoryimpl/author"
+	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
+	"github.com/uptrace/opentelemetry-go-extra/otelsql"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"google.golang.org/grpc"
 )
 
@@ -43,7 +43,7 @@ func main() {
 		ParseTime:            true,
 		AllowNativePasswords: true,
 	}
-	
+
 	// Open database with OTel SQL instrumentation
 	db, err := otelsql.Open("mysql", cfg.FormatDSN(),
 		otelsql.WithAttributes(semconv.DBSystemMySQL),
@@ -79,8 +79,7 @@ func startAuthorGRPCServer(repositorySet repository.RepositorySet) error {
 	}
 
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
-		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	)
 
 	authorServer := server.NewAuthorServer(repositorySet)
