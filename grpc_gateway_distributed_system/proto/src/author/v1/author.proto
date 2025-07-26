@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package author.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1;authorv1";
+
+service AuthorService {
+  rpc GetAuthor(GetAuthorRequest) returns (GetAuthorResponse) {
+    option (google.api.http) = {
+      get: "/v1/authors/{id}"
+    };
+  }
+}
+
+message GetAuthorRequest {
+  int64 id = 1;
+}
+
+message GetAuthorResponse {
+  Author author = 1;
+}
+
+message Author {
+  int64 id = 1;
+  string name = 2;
+  string bio = 3;
+} 

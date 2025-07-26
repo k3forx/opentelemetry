@@ -1,0 +1,9 @@
+version: "2"
+sql:
+- engine: "mysql"
+  queries: "./authors.sql"
+  schema: "../../../db/schema.sql"
+  gen:
+    go:
+      package: "author_repository_impl"
+      out: "." 

@@ -1,0 +1,64 @@
+# Go related
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+
+# Go build cache
+.cache/
+
+# Temporary files
+tmp/
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+
+# Air (live reloading tool)
+.air.toml
+tmp/
+
+# Test coverage
+*.out
+
+# Dependency directories
+vendor/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Debug files
+debug
+*.debug
+
+# Protobuf temporary files
+*.pb.go.tmp 

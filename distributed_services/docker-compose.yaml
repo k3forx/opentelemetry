@@ -24,6 +24,8 @@ services:
       OTEL_SERVICE_NAME: book-server
     ports:
       - 8080:8080
+    volumes:
+      - ./gin:/app
     networks:
       - example
 
@@ -37,6 +39,8 @@ services:
       OTEL_SERVICE_NAME: author-server
     ports:
       - 8081:8081
+    volumes:
+      - ./gin:/app
     networks:
       - example
 
