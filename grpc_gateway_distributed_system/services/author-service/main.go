@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/grpc/server"
 	"github.com/uptrace/opentelemetry-go-extra/otelsql"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"

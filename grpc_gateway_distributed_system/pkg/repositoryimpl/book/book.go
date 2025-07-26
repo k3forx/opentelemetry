@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	book_model "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/model/book"
 	book_repository "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository/book"
 )

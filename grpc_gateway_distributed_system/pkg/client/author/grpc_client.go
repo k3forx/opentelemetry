@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	author_model "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/model/author"
 	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"

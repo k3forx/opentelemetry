@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 

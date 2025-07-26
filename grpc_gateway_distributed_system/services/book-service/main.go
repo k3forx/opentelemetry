@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	author_client "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/client/author"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/grpc/server"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository"

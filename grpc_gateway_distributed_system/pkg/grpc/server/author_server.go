@@ -5,7 +5,7 @@ import (
 
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/api/usecase"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/api/usecase/author/get_by_id"
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/opentelemetry/trace"
+	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
 	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository"
 	"go.opentelemetry.io/otel/attribute"
