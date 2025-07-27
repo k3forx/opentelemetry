@@ -1,7 +1,9 @@
 package main
 
 import (
+	"cmp"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,6 +18,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+// HealthResponse はヘルスチェックのレスポンス構造体
+type HealthResponse struct {
+	Status string `json:"status"`
+}
 
 func main() {
 	ctx := context.Background()
@@ -35,6 +42,15 @@ func main() {
 	if err := startGatewayServer(ctx); err != nil {
 		log.Fatal("Failed to start gateway server:", err)
 	}
+}
+
+// healthHandler はヘルスチェックのハンドラー
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := HealthResponse{Status: "healthy"}
+	json.NewEncoder(w).Encode(response)
 }
 
 func startGatewayServer(ctx context.Context) error {
@@ -60,25 +76,29 @@ func startGatewayServer(ctx context.Context) error {
 	}
 	defer authorConn.Close()
 
-	mux := runtime.NewServeMux()
+	grpcMux := runtime.NewServeMux()
 
-	// Book Service の登録
-	if err := bookv1.RegisterBookServiceHandler(ctx, mux, bookConn); err != nil {
+	if err := bookv1.RegisterBookServiceHandler(ctx, grpcMux, bookConn); err != nil {
 		return fmt.Errorf("failed to register book service: %v", err)
 	}
 
-	// Author Service の登録
-	if err := authorv1.RegisterAuthorServiceHandler(ctx, mux, authorConn); err != nil {
+	if err := authorv1.RegisterAuthorServiceHandler(ctx, grpcMux, authorConn); err != nil {
 		return fmt.Errorf("failed to register author service: %v", err)
 	}
 
-	port := os.Getenv("GATEWAY_PORT")
-	if port == "" {
-		port = "8080"
-	}
+	const healthPath = "/v1/health"
+	mux := http.NewServeMux()
+	mux.HandleFunc(healthPath, healthHandler)
+	mux.Handle("/", grpcMux)
 
-	log.Printf("Gateway server listening on :%s", port)
+	port := cmp.Or(os.Getenv("GATEWAY_PORT"), "8080")
+
+	log.Printf("gateway server listening on :%s", port)
+
 	handler := otelhttp.NewHandler(mux, "grpc-gateway",
+		otelhttp.WithFilter(func(r *http.Request) bool {
+			return r.URL.Path != healthPath
+		}),
 		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
 			return fmt.Sprintf("HTTP %s %s", r.Method, r.URL.Path)
 		}),

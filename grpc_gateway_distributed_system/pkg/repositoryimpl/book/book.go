@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	book_model "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/model/book"
 	book_repository "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository/book"
 )
@@ -21,8 +20,8 @@ func NewBookRepository(db *sql.DB) *bookRepositoryImpl {
 }
 
 func (impl *bookRepositoryImpl) GetByID(ctx context.Context, id int64) (book_model.Book, error) {
-	ctx, span := trace.Tracer.Start(ctx, trace.SpanNameRepository)
-	defer span.End()
+	// ctx, span := trace.Tracer.Start(ctx, trace.SpanNameRepository)
+	// defer span.End()
 
 	b, err := impl.queries.GetByID(ctx, id)
 	if err != nil {

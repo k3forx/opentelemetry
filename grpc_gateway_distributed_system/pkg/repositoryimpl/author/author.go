@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/otel/trace"
 	author_model "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/model/author"
 	author_repository "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/pkg/repository/author"
 )
@@ -21,8 +20,8 @@ func NewAuthorRepository(db *sql.DB) *authorRepositoryImpl {
 }
 
 func (impl *authorRepositoryImpl) GetByID(ctx context.Context, id int64) (author_model.Author, error) {
-	ctx, span := trace.Tracer.Start(ctx, trace.SpanNameRepository)
-	defer span.End()
+	// ctx, span := trace.Tracer.Start(ctx, trace.SpanNameRepository)
+	// defer span.End()
 
 	a, err := impl.queries.GetByID(ctx, id)
 	if err != nil {
