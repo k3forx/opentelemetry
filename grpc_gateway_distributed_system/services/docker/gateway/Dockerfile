@@ -1,10 +1,10 @@
-FROM golang:1.24.1-bullseye
+FROM golang:1.26-bookworm
 
 # ヘルスチェック用にcurlをインストール
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # airをインストール（ホットリロード用）
-RUN go install github.com/air-verse/air@v1.61.7
+RUN go install github.com/air-verse/air@latest
 
 RUN mkdir /app
 WORKDIR /app

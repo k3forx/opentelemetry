@@ -16,7 +16,7 @@ import (
 	authorv1 "github.com/k3forx/opentelemetry/grpc_gateway_distributed_system/proto/gen/author/v1"
 	"github.com/uptrace/opentelemetry-go-extra/otelsql"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.41.0"
 	"google.golang.org/grpc"
 )
 
@@ -46,7 +46,7 @@ func main() {
 
 	// Open database with OTel SQL instrumentation
 	db, err := otelsql.Open("mysql", cfg.FormatDSN(),
-		otelsql.WithAttributes(semconv.DBSystemMySQL),
+		otelsql.WithAttributes(semconv.DBSystemNameMySQL),
 		otelsql.WithDBName(cfg.DBName),
 	)
 	if err != nil {
