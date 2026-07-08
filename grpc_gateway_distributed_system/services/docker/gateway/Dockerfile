@@ -4,7 +4,7 @@ FROM golang:1.24.1-bullseye
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # airをインストール（ホットリロード用）
-RUN go install github.com/air-verse/air@latest
+RUN go install github.com/air-verse/air@v1.61.7
 
 RUN mkdir /app
 WORKDIR /app

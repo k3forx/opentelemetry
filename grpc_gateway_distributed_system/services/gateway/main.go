@@ -96,13 +96,9 @@ func startGatewayServer(ctx context.Context) error {
 	log.Printf("gateway server listening on :%s", port)
 
 	handler := otelhttp.NewHandler(mux, "grpc-gateway",
-		otelhttp.WithFilter(func(r *http.Request) bool {
-			return r.URL.Path != healthPath
-		}),
 		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
 			return fmt.Sprintf("HTTP %s %s", r.Method, r.URL.Path)
 		}),
-		otelhttp.WithPublicEndpoint(), // セキュリティとベストプラクティスのため
 	)
 
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
